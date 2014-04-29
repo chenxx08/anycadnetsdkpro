@@ -587,5 +587,52 @@ namespace AnyCAD.Basic
 
             renderView.RequestDraw();
         }
+
+        private void chamferToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TopoShape box = GlobalInstance.BrepTools.MakeBox(Vector3.ZERO, Vector3.UNIT_Z, new Vector3(100, 100, 100));
+
+            // Simple
+            {
+                TopoShape chamfer1 = GlobalInstance.BrepTools.Chamfer(box, 10, 10);
+                renderView.ShowGeometry(chamfer1, 200);
+            }
+            // Complex: only chamfer the specified edge
+            {
+                int[] edgeIndex = { 0, 2 };
+                float[] dis1 = { 10, 5 };
+                float[] dis2 = { 12, 12 };
+                TopoShape chamfer2 = GlobalInstance.BrepTools.MakeChamfer(box, edgeIndex, dis1, dis2);
+                SceneNode node =  renderView.ShowGeometry(chamfer2, 201);
+
+                Matrix4 trf = GlobalInstance.MatrixBuilder.MakeTranslate(new Vector3(200, 0, 0));
+                node.SetTransform(trf);
+            }
+
+            renderView.RequestDraw();
+        }
+
+        private void filletToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TopoShape box = GlobalInstance.BrepTools.MakeBox(Vector3.ZERO, Vector3.UNIT_Z, new Vector3(100, 100, 100));
+
+            // Simple
+            {
+                TopoShape fillet1 = GlobalInstance.BrepTools.Fillet(box, 10);
+                renderView.ShowGeometry(fillet1, 200);
+            }
+            // Complex: only fillet the specified edge
+            {
+                int[] edgeIndex = { 0, 2 };
+                float[] radius = { 10, 5 };
+                TopoShape fillet2 = GlobalInstance.BrepTools.MakeFillet(box, edgeIndex, radius);
+                SceneNode node = renderView.ShowGeometry(fillet2, 201);
+
+                Matrix4 trf = GlobalInstance.MatrixBuilder.MakeTranslate(new Vector3(200, 0, 0));
+                node.SetTransform(trf);
+            }
+
+            renderView.RequestDraw();
+        }
     }
 }
