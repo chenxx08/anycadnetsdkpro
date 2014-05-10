@@ -262,14 +262,14 @@ namespace AnyCAD.Basic
             {
                 // add a ball
                 Platform.TopoShape shape = GlobalInstance.BrepTools.MakeSphere(pt, 2);
-                renderView.ShowGeometry(shape, 100);
+                renderView.ShowGeometry(shape, ++shapeId);
             }
             // Try the grid
             pt = renderView.HitPointOnGrid(e.X, e.Y);
             if (pt != null)
             {
                 Platform.TopoShape shape = GlobalInstance.BrepTools.MakeSphere(pt, 2);
-                renderView.ShowGeometry(shape, 100);
+                renderView.ShowGeometry(shape, ++shapeId);
             }
         }
 
@@ -281,7 +281,7 @@ namespace AnyCAD.Basic
             points.Add(new Platform.Vector3(0, 100, 0));
             points.Add(new Platform.Vector3(100, 100, 0));
             Platform.TopoShape wire = GlobalInstance.BrepTools.MakePolygon(points);
-            renderView.ShowGeometry(wire, 200);
+            renderView.ShowGeometry(wire, ++shapeId);
 
             Platform.Vector3 dirPlane1 = new Platform.Vector3(0, 1, 1);
             dirPlane1.Normalize();
@@ -297,7 +297,7 @@ namespace AnyCAD.Basic
             tsg.Add(newWire1);
             tsg.Add(newWire2);
             Platform.TopoShape loft = GlobalInstance.BrepTools.MakeLoft(tsg, false);
-            renderView.ShowGeometry(loft, 202);
+            renderView.ShowGeometry(loft, ++shapeId);
 
             renderView.RequestDraw();
         }
@@ -334,7 +334,7 @@ namespace AnyCAD.Basic
             lineStyle2.SetColor(ColorValue.GREEN);
 
             Platform.TopoShape arc = GlobalInstance.BrepTools.MakeEllipseArc(Vector3.ZERO, 100, 50, 45, 270, Vector3.UNIT_Z);
-            renderView.ShowGeometry(arc, 100);
+            renderView.ShowGeometry(arc, ++shapeId);
  
             {
                 Platform.GeomeCurve curve = new Platform.GeomeCurve();
@@ -353,14 +353,14 @@ namespace AnyCAD.Basic
                     // 切线
                     {
                         Platform.TopoShape line = GlobalInstance.BrepTools.MakeLine(pos, pos + dir);
-                        Platform.SceneNode node = renderView.ShowGeometry(line, 101);
+                        Platform.SceneNode node = renderView.ShowGeometry(line, ++shapeId);
                         node.SetLineStyle(lineStyle);
                     }
                     // 法线
                     {
                         Vector3 dirN = dir.CrossProduct(Vector3.UNIT_Z);
                         Platform.TopoShape line = GlobalInstance.BrepTools.MakeLine(pos, pos + dirN);
-                        Platform.SceneNode node = renderView.ShowGeometry(line, 101);
+                        Platform.SceneNode node = renderView.ShowGeometry(line, ++shapeId);
                         node.SetLineStyle(lineStyle2);
                     }
 
@@ -404,7 +404,7 @@ namespace AnyCAD.Basic
 
             TopoShape face = GlobalInstance.BrepTools.MakeSurfaceFromPoints(points, 3, 3);
 
-            renderView.ShowGeometry(face, 101);
+            renderView.ShowGeometry(face, ++shapeId);
 
             GeomeSurface surface = new GeomeSurface();
             surface.Initialize(face);
@@ -427,7 +427,7 @@ namespace AnyCAD.Basic
                     dir.Normalize();
                     {
                         Platform.TopoShape line = GlobalInstance.BrepTools.MakeLine(pos, pos + dir*10.0f);
-                        Platform.SceneNode node = renderView.ShowGeometry(line, 101);
+                        Platform.SceneNode node = renderView.ShowGeometry(line, ++shapeId);
 
                         node.SetLineStyle(lineStyle);
                     }
@@ -561,8 +561,8 @@ namespace AnyCAD.Basic
 
             TopoShape proj = GlobalInstance.BrepTools.ProjectOnSurface(line, surface);
 
-            renderView.ShowGeometry(proj, 200);
-            renderView.ShowGeometry(surface, 200);
+            renderView.ShowGeometry(proj, ++shapeId);
+            renderView.ShowGeometry(surface, ++shapeId);
             renderView.RequestDraw();
         }
 
@@ -603,7 +603,7 @@ namespace AnyCAD.Basic
             // Simple
             {
                 TopoShape chamfer1 = GlobalInstance.BrepTools.Chamfer(box, 10, 10);
-                renderView.ShowGeometry(chamfer1, 200);
+                renderView.ShowGeometry(chamfer1, ++shapeId);
             }
             // Complex: only chamfer the specified edge
             {
@@ -611,7 +611,7 @@ namespace AnyCAD.Basic
                 float[] dis1 = { 10, 5 };
                 float[] dis2 = { 12, 12 };
                 TopoShape chamfer2 = GlobalInstance.BrepTools.MakeChamfer(box, edgeIndex, dis1, dis2);
-                SceneNode node =  renderView.ShowGeometry(chamfer2, 201);
+                SceneNode node = renderView.ShowGeometry(chamfer2, ++shapeId);
 
                 Matrix4 trf = GlobalInstance.MatrixBuilder.MakeTranslate(new Vector3(200, 0, 0));
                 node.SetTransform(trf);
@@ -627,14 +627,14 @@ namespace AnyCAD.Basic
             // Simple
             {
                 TopoShape fillet1 = GlobalInstance.BrepTools.Fillet(box, 10);
-                renderView.ShowGeometry(fillet1, 200);
+                renderView.ShowGeometry(fillet1, ++shapeId);
             }
             // Complex: only fillet the specified edge
             {
                 int[] edgeIndex = { 0, 2 };
                 float[] radius = { 10, 5 };
                 TopoShape fillet2 = GlobalInstance.BrepTools.MakeFillet(box, edgeIndex, radius);
-                SceneNode node = renderView.ShowGeometry(fillet2, 201);
+                SceneNode node = renderView.ShowGeometry(fillet2, ++shapeId);
 
                 Matrix4 trf = GlobalInstance.MatrixBuilder.MakeTranslate(new Vector3(200, 0, 0));
                 node.SetTransform(trf);
@@ -652,9 +652,10 @@ namespace AnyCAD.Basic
             points.Add(new Vector3(10, 20, 150));
 
             TopoShape spline = GlobalInstance.BrepTools.MakeSpline(points);
+            TopoShape circle = GlobalInstance.BrepTools.MakeCircle(Vector3.ZERO, 10, Vector3.UNIT_Z);
 
-            renderView.ShowGeometry(spline, 200);
-
+            TopoShape shape = GlobalInstance.BrepTools.MakePipe(circle, spline, 0);
+            renderView.ShowGeometry(shape, ++shapeId);
             renderView.RequestDraw();
         }
     }
