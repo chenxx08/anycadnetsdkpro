@@ -16,6 +16,7 @@ namespace AnyCAD.Basic
         // Render Control
         private Presentation.RenderWindow3d renderView;
         private int shapeId = 100;
+        private int mToolbarHeight = 27;
         public FormMain()
         {
             InitializeComponent();
@@ -24,8 +25,11 @@ namespace AnyCAD.Basic
             // Create renderView
             // 
             this.renderView = new AnyCAD.Presentation.RenderWindow3d();
-            this.renderView.Location = new System.Drawing.Point(0, 27);
-            this.renderView.Size = this.Size;
+            this.renderView.Location = new System.Drawing.Point(0, mToolbarHeight);
+            System.Drawing.Size size = this.ClientSize;
+            size.Height = size.Height - mToolbarHeight;
+            this.renderView.Size = size;
+            
             this.renderView.TabIndex = 1;
             this.Controls.Add(this.renderView);
 
@@ -45,8 +49,12 @@ namespace AnyCAD.Basic
         }
         private void FormMain_SizeChanged(object sender, EventArgs e)
         {
-            if(renderView != null)
-                renderView.Size = this.Size;
+            if (renderView != null)
+            {
+                System.Drawing.Size size = this.ClientSize;
+                size.Height = size.Height - mToolbarHeight;
+                this.renderView.Size = size;
+            }
         }
 
         private void sphereToolStripMenuItem_Click(object sender, EventArgs e)
@@ -631,6 +639,21 @@ namespace AnyCAD.Basic
                 Matrix4 trf = GlobalInstance.MatrixBuilder.MakeTranslate(new Vector3(200, 0, 0));
                 node.SetTransform(trf);
             }
+
+            renderView.RequestDraw();
+        }
+
+        private void splineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Vector3List points = new Vector3List();
+            points.Add(new Vector3(0, 0, 0));
+            points.Add(new Vector3(0, 0, 10));
+            points.Add(new Vector3(0, 10, 50));
+            points.Add(new Vector3(10, 20, 150));
+
+            TopoShape spline = GlobalInstance.BrepTools.MakeSpline(points);
+
+            renderView.ShowGeometry(spline, 200);
 
             renderView.RequestDraw();
         }
