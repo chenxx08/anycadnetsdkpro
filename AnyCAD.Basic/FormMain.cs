@@ -9,12 +9,12 @@ using System.Windows.Forms;
 
 using AnyCAD.Platform;
 
-namespace AnyCAD.Basic
+namespace AnySample.Basic
 {
     public partial class FormMain : Form
     {
         // Render Control
-        private Presentation.RenderWindow3d renderView;
+        private AnyCAD.Presentation.RenderWindow3d renderView;
         private int shapeId = 100;
         private int mToolbarHeight = 27;
         public FormMain()
@@ -257,18 +257,18 @@ namespace AnyCAD.Basic
             if (!m_PickPoint)
                 return;
 
-            Platform.Vector3 pt = renderView.HitPointOnShape(e.X, e.Y);
+            Vector3 pt = renderView.HitPointOnShape(e.X, e.Y);
             if(pt != null)
             {
                 // add a ball
-                Platform.TopoShape shape = GlobalInstance.BrepTools.MakeSphere(pt, 2);
+                TopoShape shape = GlobalInstance.BrepTools.MakeSphere(pt, 2);
                 renderView.ShowGeometry(shape, ++shapeId);
             }
             // Try the grid
             pt = renderView.HitPointOnGrid(e.X, e.Y);
             if (pt != null)
             {
-                Platform.TopoShape shape = GlobalInstance.BrepTools.MakeSphere(pt, 2);
+                TopoShape shape = GlobalInstance.BrepTools.MakeSphere(pt, 2);
                 renderView.ShowGeometry(shape, ++shapeId);
             }
         }
@@ -276,27 +276,27 @@ namespace AnyCAD.Basic
         private void projectionToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // construct a wire;
-            Platform.Vector3List points = new Platform.Vector3List();
-            points.Add(new Platform.Vector3(0, 0, 0));
-            points.Add(new Platform.Vector3(0, 100, 0));
-            points.Add(new Platform.Vector3(100, 100, 0));
-            Platform.TopoShape wire = GlobalInstance.BrepTools.MakePolygon(points);
+            Vector3List points = new Vector3List();
+            points.Add(new Vector3(0, 0, 0));
+            points.Add(new Vector3(0, 100, 0));
+            points.Add(new Vector3(100, 100, 0));
+            TopoShape wire = GlobalInstance.BrepTools.MakePolygon(points);
             renderView.ShowGeometry(wire, ++shapeId);
 
-            Platform.Vector3 dirPlane1 = new Platform.Vector3(0, 1, 1);
+            Vector3 dirPlane1 = new Vector3(0, 1, 1);
             dirPlane1.Normalize();
-            Platform.TopoShape newWire1 = GlobalInstance.BrepTools.ProjectOnPlane(wire, new Platform.Vector3(0, 0, 100),
-                dirPlane1, new Platform.Vector3(0, 0, 1));
+            TopoShape newWire1 = GlobalInstance.BrepTools.ProjectOnPlane(wire, new Vector3(0, 0, 100),
+                dirPlane1, new Vector3(0, 0, 1));
 
-            Platform.Vector3 dirPlane2 = new Platform.Vector3(0, 1, -1);
+            Vector3 dirPlane2 = new Vector3(0, 1, -1);
             dirPlane2.Normalize();
-            Platform.TopoShape newWire2 = GlobalInstance.BrepTools.ProjectOnPlane(wire, new Platform.Vector3(0, 0, 500),
-                dirPlane2, new Platform.Vector3(0, 0, 1));
+            TopoShape newWire2 = GlobalInstance.BrepTools.ProjectOnPlane(wire, new Vector3(0, 0, 500),
+                dirPlane2, new Vector3(0, 0, 1));
 
-            Platform.TopoShapeGroup tsg = new Platform.TopoShapeGroup();
+            TopoShapeGroup tsg = new TopoShapeGroup();
             tsg.Add(newWire1);
             tsg.Add(newWire2);
-            Platform.TopoShape loft = GlobalInstance.BrepTools.MakeLoft(tsg, false);
+            TopoShape loft = GlobalInstance.BrepTools.MakeLoft(tsg, false);
             renderView.ShowGeometry(loft, ++shapeId);
 
             renderView.RequestDraw();
@@ -326,18 +326,18 @@ namespace AnyCAD.Basic
         {
             renderView.View3d.SetStandardView(3);
 
-            Platform.LineStyle lineStyle = new Platform.LineStyle();
+            LineStyle lineStyle = new LineStyle();
             lineStyle.SetLineWidth(0.5f);
             lineStyle.SetColor(ColorValue.BLUE);
-            Platform.LineStyle lineStyle2 = new Platform.LineStyle();
+            LineStyle lineStyle2 = new LineStyle();
             lineStyle2.SetLineWidth(0.5f);
             lineStyle2.SetColor(ColorValue.GREEN);
 
-            Platform.TopoShape arc = GlobalInstance.BrepTools.MakeEllipseArc(Vector3.ZERO, 100, 50, 45, 270, Vector3.UNIT_Z);
+            TopoShape arc = GlobalInstance.BrepTools.MakeEllipseArc(Vector3.ZERO, 100, 50, 45, 270, Vector3.UNIT_Z);
             renderView.ShowGeometry(arc, ++shapeId);
  
             {
-                Platform.GeomeCurve curve = new Platform.GeomeCurve();
+                GeomeCurve curve = new GeomeCurve();
                 curve.Initialize(arc);
 
                 float paramStart = curve.FirstParameter();
@@ -352,15 +352,15 @@ namespace AnyCAD.Basic
 
                     // 切线
                     {
-                        Platform.TopoShape line = GlobalInstance.BrepTools.MakeLine(pos, pos + dir);
-                        Platform.SceneNode node = renderView.ShowGeometry(line, ++shapeId);
+                        TopoShape line = GlobalInstance.BrepTools.MakeLine(pos, pos + dir);
+                        SceneNode node = renderView.ShowGeometry(line, ++shapeId);
                         node.SetLineStyle(lineStyle);
                     }
                     // 法线
                     {
                         Vector3 dirN = dir.CrossProduct(Vector3.UNIT_Z);
-                        Platform.TopoShape line = GlobalInstance.BrepTools.MakeLine(pos, pos + dirN);
-                        Platform.SceneNode node = renderView.ShowGeometry(line, ++shapeId);
+                        TopoShape line = GlobalInstance.BrepTools.MakeLine(pos, pos + dirN);
+                        SceneNode node = renderView.ShowGeometry(line, ++shapeId);
                         node.SetLineStyle(lineStyle2);
                     }
 
@@ -385,7 +385,7 @@ namespace AnyCAD.Basic
 
         private void surfaceToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            Platform.LineStyle lineStyle = new Platform.LineStyle();
+            LineStyle lineStyle = new LineStyle();
             lineStyle.SetLineWidth(0.5f);
             lineStyle.SetColor(ColorValue.RED);
 
@@ -426,8 +426,8 @@ namespace AnyCAD.Basic
                     Vector3 dir = dirV.CrossProduct(dirU);
                     dir.Normalize();
                     {
-                        Platform.TopoShape line = GlobalInstance.BrepTools.MakeLine(pos, pos + dir*10.0f);
-                        Platform.SceneNode node = renderView.ShowGeometry(line, ++shapeId);
+                        TopoShape line = GlobalInstance.BrepTools.MakeLine(pos, pos + dir*10.0f);
+                        SceneNode node = renderView.ShowGeometry(line, ++shapeId);
 
                         node.SetLineStyle(lineStyle);
                     }

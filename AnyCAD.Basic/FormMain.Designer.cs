@@ -1,4 +1,4 @@
-﻿namespace AnyCAD.Basic
+﻿namespace AnySample.Basic
 {
     partial class FormMain
     {

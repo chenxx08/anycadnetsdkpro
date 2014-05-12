@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using AnyCAD.Platform;
 
-namespace AnyCAD.Basic
+namespace AnySample.Basic
 {
     public class ReadShapeContext : AnyCAD.Platform.ITopoShapeReaderContext
     {
